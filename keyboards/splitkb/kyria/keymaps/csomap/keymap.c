@@ -20,10 +20,10 @@
 #include "custom_autoshift.h"
 #include "user_keycodes.h"
 
-const uint16_t PROGMEM cas_ins_lc[]      = { KC_INS, CAS_SEQ_END };
-const uint16_t PROGMEM cas_ins_uc[]      = { KC_LSFT, KC_INS, CAS_SEQ_END };
-const uint16_t PROGMEM cas_astr_lc[]     = { KC_LSFT, KC_8, CAS_SEQ_END };
-const uint16_t PROGMEM cas_astr_uc[]     = { KC_LSFT, KC_1, CAS_SEQ_END };
+const uint16_t cas_ins_lc[]      = { KC_INS, CAS_SEQ_END };
+const uint16_t cas_ins_uc[]      = { KC_LSFT, KC_INS, CAS_SEQ_END };
+const uint16_t cas_astr_lc[]     = { KC_LSFT, KC_8, CAS_SEQ_END };
+const uint16_t cas_astr_uc[]     = { KC_LSFT, KC_1, CAS_SEQ_END };
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _NAVNUM, _SYMBOLS, _I3WM);
