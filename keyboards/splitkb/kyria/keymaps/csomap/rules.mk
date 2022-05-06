@@ -16,6 +16,6 @@ EXTRAKEY_ENABLE = no
 
 SRC += unicode.c
 SRC += casemodes.c
-SRC += custom_autoshift.c
 SRC += combos.c
-SRC += user_keycodes.c
+SRC += custom_keycodes.c
+SRC += i3wm.c

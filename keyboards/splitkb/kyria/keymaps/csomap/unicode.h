@@ -14,6 +14,4 @@ typedef enum {
     UC_UEE,
 } uc_names_t;
 
-extern const uint32_t custom_unicode_map[][2];
-
 uint32_t uc_getcode(uc_names_t name, bool uppercase);

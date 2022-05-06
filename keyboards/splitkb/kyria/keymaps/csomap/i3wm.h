@@ -1,0 +1,48 @@
+#pragma once
+
+#include QMK_KEYBOARD_H
+
+typedef enum {
+   I3WM_L,
+   I3WM_R,
+   I3WM_U,
+   I3WM_D,
+   I3WM_0,
+   I3WM_1,
+   I3WM_2,
+   I3WM_3,
+   I3WM_4,
+   I3WM_5,
+   I3WM_6,
+   I3WM_7,
+   I3WM_8,
+   I3WM_9,
+   I3WM_MOVE_L,
+   I3WM_MOVE_R,
+   I3WM_MOVE_U,
+   I3WM_MOVE_D,
+   I3WM_MOVE_0,
+   I3WM_MOVE_1,
+   I3WM_MOVE_2,
+   I3WM_MOVE_3,
+   I3WM_MOVE_4,
+   I3WM_MOVE_5,
+   I3WM_MOVE_6,
+   I3WM_MOVE_7,
+   I3WM_MOVE_8,
+   I3WM_MOVE_9,
+   I3WM_LAUNCHER,
+   I3WM_TERMINAL,
+   I3WM_LOCK_SCREEN,
+   I3WM_FULL_SCREEN,
+   I3WM_STACK,
+   I3WM_V_SPLIT,
+   I3WM_H_SPLIT,
+   I3WM_FORCECLOSE,
+   I3WM_SHUTDOWN_MENU,
+   I3WM_RESIZE,
+   I3WM_RELOAD_CONFIG,
+   I3WM_RESTART_WM,
+} i3wm_event_t;
+
+void process_i3wm_event(i3wm_event_t event, bool pressed);

@@ -15,49 +15,98 @@
 
 #include QMK_KEYBOARD_H
 
-#include "layers.h"
-#include "combos.h"
-#include "custom_autoshift.h"
-#include "user_keycodes.h"
+#include "custom_keycodes.h"
+#include "casemodes.h"
 
-const uint16_t cas_ins_lc[]      = { KC_INS, CAS_SEQ_END };
-const uint16_t cas_ins_uc[]      = { KC_LSFT, KC_INS, CAS_SEQ_END };
-const uint16_t cas_astr_lc[]     = { KC_LSFT, KC_8, CAS_SEQ_END };
-const uint16_t cas_astr_uc[]     = { KC_LSFT, KC_1, CAS_SEQ_END };
+enum layers {
+    _QWERTY = 0,
+    _NAVNUM,
+    _SYMBOLS,
+    _I3WM,
+    _FUNCTION,
+    _CLION,
+};
+
+const uint16_t PROGMEM pointer_combo[]   = {KC_G, KC_H, COMBO_END}; // Print C/C++ style pointer('->')
+const uint16_t PROGMEM vimpaste_combo[]  = {KC_H, KC_J, COMBO_END}; // Paste in Vim insertion mode
+const uint16_t PROGMEM launcher_combo[]  = {KC_D, KC_F, COMBO_END}; // Open I3WM application launcher
+const uint16_t PROGMEM terminalv_combo[] = {KC_D, KC_V, COMBO_END}; // Open terminal in I3WM in vertical split
+const uint16_t PROGMEM terminalh_combo[] = {KC_D, KC_G, COMBO_END}; // Open terminal in I3WM in horizontal split
+const uint16_t PROGMEM vimnl_combo[]     = {KC_J, KC_K, COMBO_END}; // Insert new line above in Vim insertion mode
+const uint16_t PROGMEM fclose_combo[]    = {KC_Q, KC_P, COMBO_END}; // Force close window in I3WM
+const uint16_t PROGMEM cword_combo[]     = {KC_F, KC_J, COMBO_END}; // Toggle auto-caps
+
+// Combos for printing special hungarian characters
+const uint16_t PROGMEM aa_combo[]        = {KC_A, KC_COMMA, COMBO_END};
+const uint16_t PROGMEM ee_combo[]        = {KC_E, KC_COMMA, COMBO_END};
+const uint16_t PROGMEM ii_combo[]        = {KC_I, KC_F, COMBO_END};
+const uint16_t PROGMEM oo_combo[]        = {KC_O, KC_F, COMBO_END};
+const uint16_t PROGMEM oe_combo[]        = {KC_O, KC_D, COMBO_END};
+const uint16_t PROGMEM oee_combo[]       = {KC_O, KC_S, COMBO_END};
+const uint16_t PROGMEM uu_combo[]        = {KC_U, KC_F, COMBO_END};
+const uint16_t PROGMEM ue_combo[]        = {KC_U, KC_D, COMBO_END};
+const uint16_t PROGMEM uee_combo[]       = {KC_U, KC_S, COMBO_END};
+
+void as_combo_scan(void);
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _NAVNUM, _SYMBOLS, _I3WM);
 }
 
 void matrix_scan_user(void) {
-    scan_cas();
+    as_combo_scan();
+}
+
+bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+    if(can_autoshift_custom_kc(keycode)) {
+        return true;
+    }
+
+    switch(keycode) {
+        case KC_ASTR:
+        case KC_INS:
+            return true;
+    }
+
+    return false;
+}
+
+void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t* record) {
+    if(!process_custom_autoshift(keycode, shifted, true, record)) {
+        return;
+    }
+
+    switch (keycode) {
+        case KC_ASTR:
+            register_code16(shifted ? KC_EXLM : KC_ASTR);
+            break;
+        default:
+            if(shifted) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+            }
+            register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
+}
+
+void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t* record) {
+    if(!process_custom_autoshift(keycode, shifted, false, record)) {
+        return;
+    }
+
+    switch (keycode) {
+        case KC_ASTR:
+            unregister_code16(shifted ? KC_EXLM : KC_ASTR);
+            break;
+        default:
+            unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     if (!process_case_modes(keycode, record)) {
         return false;
     }
-
-    if (!process_user_keycodes(keycode, record)) {
-        return false;
-    }
-
-    switch(keycode) {
-    case KC_INS:
-        if(record->event.pressed) {
-            cas_start_sequence(cas_ins_lc, cas_ins_uc);
-        }
-        else {
-            cas_end();
-        }
-        return false;
-    case KC_ASTR:
-        if(record->event.pressed) {
-            cas_start_sequence(cas_astr_lc, cas_astr_uc);
-        }
-        else {
-            cas_end();
-        }
+    if (!process_custom_keycodes(keycode, record)) {
         return false;
     }
 
@@ -71,7 +120,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT(
       KC_ASTR, KC_Q, KC_W, KC_E, KC_R, KC_T,                                                          KC_Y, KC_U, KC_I,    KC_O,   KC_P,    KC_BSLASH,
       KC_LSPO, KC_A, KC_S, KC_D, KC_F, KC_G,                                                          KC_H, KC_J, KC_K,    KC_L,   KC_SCLN, KC_RSPC,
-      _______, KC_Z, KC_X, KC_C, KC_V, KC_B, OSL(_I3WM), RSG(KC_D),                      KC_SLCK, _______, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, _______,
+      _______, KC_Z, KC_X, KC_C, KC_V, KC_B, OSL(_I3WM), KC_I3WM_LOCK_SCREEN,                      KC_SLCK, _______, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, _______,
               OSM(MOD_LGUI), KC_LALT, LT(_CLION, KC_DEL), LT(_NAVNUM, KC_SPC), LCTL_T(KC_TAB),  LALT_T(KC_ENT), LT(_SYMBOLS, KC_BSPC), LT(_FUNCTION, KC_ESC), KC_LCTL, _______
     ),
 /*
@@ -87,7 +136,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Symbol layer
  */
     [_SYMBOLS] = LAYOUT(
-      KC_TILD, _______, KC_CIRC, KC_AT,   KC_LABK, _______,                                       _______,   KC_RABK, KC_AMPR, KC_DLR, _______, _______,
+      _______, KC_TILD, KC_CIRC, KC_AT,   KC_LABK, _______,                                       _______,   KC_RABK, KC_AMPR, KC_DLR, _______, _______,
       _______, KC_ASTR, KC_QUOT, KC_LCBR, KC_LPRN, KC_UNDS,                                       KC_MINS, KC_RPRN, KC_RCBR, KC_EQL, _______,  _______,
       _______, _______, _______, KC_HASH, KC_LBRC, _______, _______, _______,   _______, _______, _______,   KC_RBRC, KC_PERC, _______, _______, _______,
                                  _______, _______, _______, _______, S(KC_TAB), _______, _______, _______, _______, _______
@@ -96,9 +145,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * I3WM layer
  */
     [_I3WM] = LAYOUT(
-      _______,    KC_I3WM_0, KC_I3WM_9, KC_I3WM_8, KC_I3WM_7, KC_I3WM_6,                                     G(KC_R), _______, _______,   _______, _______, RGUI(KC_PAUSE),
-      G(KC_GRV),  KC_I3WM_4, KC_I3WM_3, KC_I3WM_2, KC_I3WM_1, G(KC_F),                                     KC_I3WM_L, KC_I3WM_D, KC_I3WM_U, KC_I3WM_R, KC_LSFT, _______,
-      RSG(KC_R),  _______, _______, _______, KC_I3WM_5, _______, _______, _______, _______, _______, G(KC_N), G(KC_V), _______, _______, _______, RSG(KC_C),
+      _______,    KC_I3WM_0, KC_I3WM_9, KC_I3WM_8, KC_I3WM_7, KC_I3WM_6,                                      KC_I3WM_RESIZE, _______, _______,   _______, _______, KC_I3WM_SHUTDOWN_MENU,
+      KC_I3WM_STACK,  KC_I3WM_4, KC_I3WM_3, KC_I3WM_2, KC_I3WM_1, KC_I3WM_FULL_SCREEN,                        KC_I3WM_L, KC_I3WM_D, KC_I3WM_U, KC_I3WM_R, _______, _______,
+      KC_I3WM_RESTART_WM,  _______, _______, _______, KC_I3WM_5, _______, _______, _______, _______, _______, KC_I3WM_H_SPLIT, KC_I3WM_V_SPLIT, _______, _______, _______, KC_I3WM_RELOAD_CONFIG,
                            _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
 
