@@ -16,8 +16,8 @@
 
 #pragma once
 
+#define PERMISSIVE_HOLD
 #define TAPPING_TERM 165
-#define COMBO_COUNT 9
 
 #define I3WM_KEYCODE_START SAFE_RANGE
 

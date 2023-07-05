@@ -43,6 +43,10 @@ typedef enum i3wm_keycode {
    KC_I3_RESIZE,
    KC_I3_RELOAD_CONFIG,
    KC_I3_RESTART_WM,
+   KC_I3_SPT,
+   KC_I3_MAX,
+
+   // aliases
    KC_I3_ML = KC_I3_MOVE_L,
    KC_I3_MR = KC_I3_MOVE_R,
    KC_I3_MU = KC_I3_MOVE_U,
