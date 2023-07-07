@@ -32,6 +32,8 @@ const uint16_t i3wm_mapping[] = {
    [I3WM_KC_TO_IDX(KC_I3_MOVE_7)] = S(KC_7),
    [I3WM_KC_TO_IDX(KC_I3_MOVE_8)] = S(KC_8),
    [I3WM_KC_TO_IDX(KC_I3_MOVE_9)] = S(KC_9),
+   [I3WM_KC_TO_IDX(KC_I3_PREV_WS)] = A(KC_LBRC),
+   [I3WM_KC_TO_IDX(KC_I3_NEXT_WS)] = A(KC_RBRC),
    [I3WM_KC_TO_IDX(KC_I3_LAUNCHER)] = KC_D,
    [I3WM_KC_TO_IDX(KC_I3_TERMINAL)] = KC_ENT,
    [I3WM_KC_TO_IDX(KC_I3_LOCK_SCREEN)] = S(KC_D),
@@ -44,7 +46,14 @@ const uint16_t i3wm_mapping[] = {
    [I3WM_KC_TO_IDX(KC_I3_RESIZE)] = KC_R,
    [I3WM_KC_TO_IDX(KC_I3_RELOAD_CONFIG)] = S(KC_C),
    [I3WM_KC_TO_IDX(KC_I3_RESTART_WM)] = S(KC_R),
-   [I3WM_KC_TO_IDX(KC_I3_SPT)] = KC_BSPC,
+   [I3WM_KC_TO_IDX(KC_I3_SPT_SHOW)] = KC_BSPC,
+   [I3WM_KC_TO_IDX(KC_I3_SPT_PLAY)] = S(KC_F11),
+   [I3WM_KC_TO_IDX(KC_I3_SPT_PREV)] = S(KC_F10),
+   [I3WM_KC_TO_IDX(KC_I3_SPT_NEXT)] = S(KC_F12),
+   [I3WM_KC_TO_IDX(KC_I3_VOLD)] = KC_PGDN,
+   [I3WM_KC_TO_IDX(KC_I3_VOLU)] = KC_PGUP,
+   [I3WM_KC_TO_IDX(KC_I3_PRINTSCR)] = KC_PSCR,
+   [I3WM_KC_TO_IDX(KC_I3_PRINTSCR_WINDOW)] = A(KC_PSCR),
 };
 
 static bool is_valid(uint16_t i3wm_code) {
@@ -55,6 +64,9 @@ void register_i3wm_code(uint16_t i3wm_code) {
     if(!is_valid(i3wm_code)) {
         return;
     }
+#ifdef CONSOLE_ENABLE
+    uprintf("I3WM KC: %u, mapping: %u\n", i3wm_code, I3WM_KC_TO_IDX(i3wm_code));
+#endif
     register_code(KC_LGUI);
     register_code16(i3wm_mapping[I3WM_KC_TO_IDX(i3wm_code)]);
     unregister_code16(i3wm_mapping[I3WM_KC_TO_IDX(i3wm_code)]);

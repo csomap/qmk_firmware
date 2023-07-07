@@ -1,5 +1,4 @@
 #include "tapdances.h"
-#include "layers.h"
 #include "i3wm.h"
 
 typedef enum {
